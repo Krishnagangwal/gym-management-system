@@ -11,6 +11,7 @@ import Memberships from './pages/Memberships';
 import Trainers from './pages/Trainers';
 import Exercises from './pages/Exercises';
 import WorkoutPlans from './pages/WorkoutPlans';
+import Attendance from './pages/Attendance';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/trainers" element={<ProtectedRoute><Layout><Trainers /></Layout></ProtectedRoute>} />
           <Route path="/exercises" element={<ProtectedRoute><Layout><Exercises /></Layout></ProtectedRoute>} />
           <Route path="/workout-plans" element={<ProtectedRoute><Layout><WorkoutPlans /></Layout></ProtectedRoute>} />
+          <Route path="/attendance" element={<ProtectedRoute><Layout><Attendance /></Layout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
