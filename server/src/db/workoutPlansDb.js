@@ -39,4 +39,24 @@ async function findExercises(planId) {
   return result.rows;
 }
 
-module.exports = { create, findAll, findById, addExercise, findExercises };
+async function assignToMember(memberId, workoutPlanId) {
+  const result = await pool.query(
+    'INSERT INTO member_workout_plans (member_id, workout_plan_id) VALUES ($1,$2) RETURNING *',
+    [memberId, workoutPlanId]
+  );
+  return result.rows[0];
+}
+
+async function findForMember(memberId) {
+  const result = await pool.query(
+    `SELECT mwp.id AS assignment_id, mwp.assigned_date, mwp.is_active, wp.*
+     FROM member_workout_plans mwp
+     JOIN workout_plans wp ON wp.id = mwp.workout_plan_id
+     WHERE mwp.member_id = $1 AND mwp.is_active = TRUE
+     ORDER BY mwp.assigned_date DESC`,
+    [memberId]
+  );
+  return result.rows;
+}
+
+module.exports = { create, findAll, findById, addExercise, findExercises, assignToMember, findForMember };
