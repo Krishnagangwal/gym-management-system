@@ -31,10 +31,12 @@ See `docs/superpowers/specs/2026-08-19-gym-management-system-design.md` for the 
    npm run dev             # runs on http://localhost:5173
    ```
 
-## Default login
+## Default logins
 
-- Email: `admin@gym.com`
-- Password: `Admin@123`
+- Admin — Email: `admin@gym.com`, Password: `Admin@123`
+- Staff — Email: `staff@gym.com`, Password: `Staff@123`
+
+Seed data includes 8 members, 5 trainers, 12 exercises, 3 workout plans, and a mix of active/expired/expiring-soon memberships, payments, and attendance — enough to see every page populated.
 
 ## Notes
 
