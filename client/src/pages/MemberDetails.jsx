@@ -5,6 +5,7 @@ import { membersApi } from '../api/members';
 import { membershipsApi } from '../api/memberships';
 import { membershipPlansApi } from '../api/membershipPlans';
 import { trainersApi } from '../api/trainers';
+import { workoutPlansApi } from '../api/workoutPlans';
 import { formatDate, todayISO } from '../utils/formatDate';
 
 export default function MemberDetails() {
@@ -20,6 +21,9 @@ export default function MemberDetails() {
   const [trainer, setTrainer] = useState(null);
   const [trainers, setTrainers] = useState([]);
   const [trainerId, setTrainerId] = useState('');
+  const [memberPlans, setMemberPlans] = useState([]);
+  const [allPlans, setAllPlans] = useState([]);
+  const [selectedPlanId, setSelectedPlanId] = useState('');
 
   function loadHistory() {
     membershipsApi.history(token, id).then(setHistory).catch((err) => setError(err.message));
@@ -31,6 +35,8 @@ export default function MemberDetails() {
     membershipPlansApi.list(token).then(setPlans).catch(() => {});
     trainersApi.memberTrainer(token, id).then(setTrainer);
     trainersApi.list(token).then(setTrainers).catch(() => {});
+    workoutPlansApi.memberPlans(token, id).then(setMemberPlans).catch(() => {});
+    workoutPlansApi.list(token).then(setAllPlans).catch(() => {});
   }, [token, id]);
 
   async function handleAssign(e) {
@@ -49,6 +55,12 @@ export default function MemberDetails() {
     e.preventDefault();
     await trainersApi.assign(token, trainerId, id);
     trainersApi.memberTrainer(token, id).then(setTrainer);
+  }
+
+  async function handleAssignPlan(e) {
+    e.preventDefault();
+    await workoutPlansApi.assignToMember(token, id, selectedPlanId);
+    workoutPlansApi.memberPlans(token, id).then(setMemberPlans);
   }
 
   if (error) return <div className="bg-red-100 text-red-700 px-4 py-3 rounded">{error}</div>;
@@ -96,6 +108,22 @@ export default function MemberDetails() {
             {trainers.map((t) => <option key={t.id} value={t.id}>{t.first_name} {t.last_name}</option>)}
           </select>
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Assign Trainer</button>
+        </form>
+      </div>
+
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 className="font-semibold mb-3">Workout Plans</h2>
+        {memberPlans.length === 0 ? <p className="text-sm text-gray-500 mb-2">No workout plan assigned.</p> : (
+          <ul className="text-sm mb-2 list-disc list-inside">
+            {memberPlans.map((p) => <li key={p.assignment_id}>{p.name} ({p.difficulty_level})</li>)}
+          </ul>
+        )}
+        <form onSubmit={handleAssignPlan} className="flex gap-2 items-end">
+          <select value={selectedPlanId} onChange={(e) => setSelectedPlanId(e.target.value)} className="border rounded px-3 py-2 text-sm" required>
+            <option value="" disabled>Select a workout plan</option>
+            {allPlans.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Assign Plan</button>
         </form>
       </div>
 

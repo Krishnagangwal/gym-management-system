@@ -9,6 +9,8 @@ import MemberDetails from './pages/MemberDetails';
 import MembershipPlans from './pages/MembershipPlans';
 import Memberships from './pages/Memberships';
 import Trainers from './pages/Trainers';
+import Exercises from './pages/Exercises';
+import WorkoutPlans from './pages/WorkoutPlans';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="/membership-plans" element={<ProtectedRoute><Layout><MembershipPlans /></Layout></ProtectedRoute>} />
           <Route path="/memberships" element={<ProtectedRoute><Layout><Memberships /></Layout></ProtectedRoute>} />
           <Route path="/trainers" element={<ProtectedRoute><Layout><Trainers /></Layout></ProtectedRoute>} />
+          <Route path="/exercises" element={<ProtectedRoute><Layout><Exercises /></Layout></ProtectedRoute>} />
+          <Route path="/workout-plans" element={<ProtectedRoute><Layout><WorkoutPlans /></Layout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
