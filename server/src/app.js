@@ -4,6 +4,7 @@ const authRoutes = require('./routes/authRoutes');
 const memberRoutes = require('./routes/memberRoutes');
 const membershipPlanRoutes = require('./routes/membershipPlanRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
+const trainerRoutes = require('./routes/trainerRoutes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/members', memberRoutes);
 app.use('/api/membership-plans', membershipPlanRoutes);
 app.use('/api', membershipRoutes);
+app.use('/api', trainerRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
