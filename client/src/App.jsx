@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Layout>
-                  <div className="text-xl font-semibold">Dashboard (next task)</div>
+                  <Dashboard />
                 </Layout>
               </ProtectedRoute>
             }
