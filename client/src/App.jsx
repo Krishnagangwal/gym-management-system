@@ -8,6 +8,7 @@ import Members from './pages/Members';
 import MemberDetails from './pages/MemberDetails';
 import MembershipPlans from './pages/MembershipPlans';
 import Memberships from './pages/Memberships';
+import Trainers from './pages/Trainers';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/members/:id" element={<ProtectedRoute><Layout><MemberDetails /></Layout></ProtectedRoute>} />
           <Route path="/membership-plans" element={<ProtectedRoute><Layout><MembershipPlans /></Layout></ProtectedRoute>} />
           <Route path="/memberships" element={<ProtectedRoute><Layout><Memberships /></Layout></ProtectedRoute>} />
+          <Route path="/trainers" element={<ProtectedRoute><Layout><Trainers /></Layout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

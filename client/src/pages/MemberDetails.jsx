@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { membersApi } from '../api/members';
 import { membershipsApi } from '../api/memberships';
 import { membershipPlansApi } from '../api/membershipPlans';
+import { trainersApi } from '../api/trainers';
 import { formatDate, todayISO } from '../utils/formatDate';
 
 export default function MemberDetails() {
@@ -16,6 +17,9 @@ export default function MemberDetails() {
   const [assignError, setAssignError] = useState('');
   const [planId, setPlanId] = useState('');
   const [startDate, setStartDate] = useState(todayISO());
+  const [trainer, setTrainer] = useState(null);
+  const [trainers, setTrainers] = useState([]);
+  const [trainerId, setTrainerId] = useState('');
 
   function loadHistory() {
     membershipsApi.history(token, id).then(setHistory).catch((err) => setError(err.message));
@@ -25,6 +29,8 @@ export default function MemberDetails() {
     membersApi.get(token, id).then(setMember).catch((err) => setError(err.message));
     loadHistory();
     membershipPlansApi.list(token).then(setPlans).catch(() => {});
+    trainersApi.memberTrainer(token, id).then(setTrainer);
+    trainersApi.list(token).then(setTrainers).catch(() => {});
   }, [token, id]);
 
   async function handleAssign(e) {
@@ -37,6 +43,12 @@ export default function MemberDetails() {
     } catch (err) {
       setAssignError(err.message);
     }
+  }
+
+  async function handleAssignTrainer(e) {
+    e.preventDefault();
+    await trainersApi.assign(token, trainerId, id);
+    trainersApi.memberTrainer(token, id).then(setTrainer);
   }
 
   if (error) return <div className="bg-red-100 text-red-700 px-4 py-3 rounded">{error}</div>;
@@ -68,6 +80,22 @@ export default function MemberDetails() {
             <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border rounded px-3 py-2 text-sm" required />
           </div>
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Assign / Renew</button>
+        </form>
+      </div>
+
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 className="font-semibold mb-3">Trainer</h2>
+        {trainer ? (
+          <p className="text-sm">Currently assigned: <strong>{trainer.first_name} {trainer.last_name}</strong> ({trainer.specialization})</p>
+        ) : (
+          <p className="text-sm text-gray-500 mb-2">No trainer assigned.</p>
+        )}
+        <form onSubmit={handleAssignTrainer} className="flex gap-2 items-end mt-2">
+          <select value={trainerId} onChange={(e) => setTrainerId(e.target.value)} className="border rounded px-3 py-2 text-sm" required>
+            <option value="" disabled>Select a trainer</option>
+            {trainers.map((t) => <option key={t.id} value={t.id}>{t.first_name} {t.last_name}</option>)}
+          </select>
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Assign Trainer</button>
         </form>
       </div>
 
