@@ -13,6 +13,7 @@ import Exercises from './pages/Exercises';
 import WorkoutPlans from './pages/WorkoutPlans';
 import Attendance from './pages/Attendance';
 import Payments from './pages/Payments';
+import Reports from './pages/Reports';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/workout-plans" element={<ProtectedRoute><Layout><WorkoutPlans /></Layout></ProtectedRoute>} />
           <Route path="/attendance" element={<ProtectedRoute><Layout><Attendance /></Layout></ProtectedRoute>} />
           <Route path="/payments" element={<ProtectedRoute><Layout><Payments /></Layout></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Layout><Reports /></Layout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
