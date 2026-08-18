@@ -56,4 +56,11 @@ async function countForDate(date) {
   return result.rows[0].count;
 }
 
-module.exports = { checkIn, checkOut, findAll, findById, countForDate };
+async function countForToday() {
+  const result = await pool.query(
+    `SELECT COUNT(*)::int AS count FROM attendance WHERE check_in_time::date = CURRENT_DATE`
+  );
+  return result.rows[0].count;
+}
+
+module.exports = { checkIn, checkOut, findAll, findById, countForDate, countForToday };

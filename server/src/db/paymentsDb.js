@@ -46,6 +46,13 @@ async function sumForMonth(month) {
   return result.rows[0].total;
 }
 
+async function sumForCurrentMonth() {
+  const result = await pool.query(
+    `SELECT COALESCE(SUM(amount), 0)::numeric AS total FROM payments WHERE to_char(payment_date, 'YYYY-MM') = to_char(CURRENT_DATE, 'YYYY-MM')`
+  );
+  return result.rows[0].total;
+}
+
 async function findRecent(limit) {
   const result = await pool.query(
     `SELECT p.*, m.first_name, m.last_name
@@ -56,4 +63,4 @@ async function findRecent(limit) {
   return result.rows;
 }
 
-module.exports = { create, findAll, findById, sumForMonth, findRecent };
+module.exports = { create, findAll, findById, sumForMonth, sumForCurrentMonth, findRecent };

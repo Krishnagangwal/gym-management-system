@@ -10,6 +10,7 @@ const workoutPlanRoutes = require('./routes/workoutPlanRoutes');
 const memberWorkoutRoutes = require('./routes/memberWorkoutRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/workout-plans', workoutPlanRoutes);
 app.use('/api', memberWorkoutRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
