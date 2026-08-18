@@ -28,19 +28,21 @@ async function findByMember(memberId) {
 }
 
 async function findAll({ status }) {
-  const params = [];
+  // "active"/"expired" are derived from end_date, not the stored status column:
+  // nothing in this app flips status to 'expired' over time, so filtering on
+  // the literal column would always return an empty "expired" list.
   let where = '';
-  if (status) {
-    params.push(status);
-    where = 'WHERE m.status = $1';
+  if (status === 'active') {
+    where = "WHERE m.status = 'active' AND m.end_date >= CURRENT_DATE";
+  } else if (status === 'expired') {
+    where = 'WHERE m.end_date < CURRENT_DATE';
   }
   const result = await pool.query(
     `SELECT m.*, mem.first_name, mem.last_name, p.name AS plan_name
      FROM memberships m
      JOIN members mem ON mem.id = m.member_id
      JOIN membership_plans p ON p.id = m.plan_id
-     ${where} ORDER BY m.end_date ASC`,
-    params
+     ${where} ORDER BY m.end_date ASC`
   );
   return result.rows;
 }
