@@ -12,6 +12,7 @@ import Trainers from './pages/Trainers';
 import Exercises from './pages/Exercises';
 import WorkoutPlans from './pages/WorkoutPlans';
 import Attendance from './pages/Attendance';
+import Payments from './pages/Payments';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/exercises" element={<ProtectedRoute><Layout><Exercises /></Layout></ProtectedRoute>} />
           <Route path="/workout-plans" element={<ProtectedRoute><Layout><WorkoutPlans /></Layout></ProtectedRoute>} />
           <Route path="/attendance" element={<ProtectedRoute><Layout><Attendance /></Layout></ProtectedRoute>} />
+          <Route path="/payments" element={<ProtectedRoute><Layout><Payments /></Layout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
