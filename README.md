@@ -33,12 +33,12 @@ See `docs/superpowers/specs/2026-08-19-gym-management-system-design.md` for the 
 
 ## Default logins
 
-- Admin — Email: `admin@gym.com`, Password: `Admin@123`
-- Staff — Email: `staff@gym.com`, Password: `Staff@123`
+- Admin: Email `admin@gym.com`, Password `Admin@123`
+- Staff: Email `staff@gym.com`, Password `Staff@123`
 
-Seed data includes 8 members, 5 trainers, 12 exercises, 3 workout plans, and a mix of active/expired/expiring-soon memberships, payments, and attendance — enough to see every page populated.
+Seed data includes 8 members, 5 trainers, 12 exercises, 3 workout plans, and a mix of active/expired/expiring-soon memberships, payments, and attendance, enough to see every page populated.
 
 ## Notes
 
-- The backend runs on port **4000**, not 5000 — macOS's AirPlay Receiver (Control Center) occupies port 5000 by default and silently kills competing listeners.
-- No automated test suite yet — this project defers formal testing to a later phase, per the development roadmap in the design spec. Every endpoint and page was manually verified (backend via `curl`, frontend via a real browser) during development.
+- The backend runs on port **4000**, not 5000. macOS's AirPlay Receiver (Control Center) occupies port 5000 by default and silently kills competing listeners.
+- No automated test suite yet. This project defers formal testing to a later phase, per the development roadmap in the design spec. Every endpoint and page was manually verified (backend via `curl`, frontend via a real browser) during development.
