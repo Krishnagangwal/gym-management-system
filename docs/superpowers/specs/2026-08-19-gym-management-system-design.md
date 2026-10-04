@@ -9,9 +9,14 @@ A web-based Gym & Fitness Center Management System for a college capstone projec
 
 ## 2. Actors
 
-- **Admin** — full access: members, trainers, membership plans, workouts, attendance, payments, dashboard.
+> **Amended 2026-08-25**: extended to a role-based, analytics-driven system (member portal, trainer portal, admin analytics, churn scoring, notifications). This section originally read "Members are not app users. They have no login" — that constraint was deliberately lifted. See `docs/superpowers/plans/` for the extension's phased rollout; Phase 1 (role-based auth) is implemented as of this amendment.
+
+- **Admin** — full access: members, trainers, membership plans, workouts, attendance, payments, dashboard, analytics.
 - **Staff** — view/manage members, record attendance, record payments, view (not manage) trainers/workouts.
-- **Members are not app users.** They have no login; they are records managed by Admin/Staff. This keeps auth to exactly two roles, as specified.
+- **Trainer** — a portal account linked to a `trainers` row (`users.trainer_id`). Can view their assigned members and manage those members' workout plans. No access to admin/staff-only pages (members list, payments, other trainers, etc.).
+- **Member** — a portal account linked to a `members` row (`users.member_id`). Can view their own profile, membership history, workout plan, attendance, and payments. No access to any other member's data or to admin/staff pages.
+
+Trainer and member accounts are opt-in: a `members`/`trainers` row can exist with no linked login (as before), and an admin grants portal access explicitly by creating the linked `users` row with an initial password (self-service signup is not implemented — see the extension plan for why).
 
 ## 3. Modules & Features
 
@@ -62,7 +67,7 @@ Chosen approach: plain `pg` (node-postgres) with hand-written parameterized SQL 
 
 | Table | Key columns | Notes |
 |---|---|---|
-| `users` | id PK, name, email UK, password_hash, role (admin/staff) | login accounts, standalone |
+| `users` | id PK, name, email UK, password_hash, role (admin/staff/trainer/member), member_id FK→members (nullable, UK), trainer_id FK→trainers (nullable, UK) | login accounts; member_id/trainer_id link a portal account to its record (added in the role-based auth extension, migration 001) |
 | `members` | id PK, first_name, last_name, email UK, phone, dob, gender, address, join_date, is_active | |
 | `membership_plans` | id PK, name, description, duration_days, price, is_active | catalog |
 | `memberships` | id PK, member_id FK, plan_id FK, start_date, end_date, status | one row per period; history preserved |
@@ -93,6 +98,8 @@ erDiagram
         varchar email UK
         varchar password_hash
         varchar role
+        int member_id FK "nullable, unique"
+        int trainer_id FK "nullable, unique"
     }
     MEMBERS {
         int id PK
@@ -174,6 +181,8 @@ erDiagram
         varchar payment_method
     }
 
+    MEMBERS ||--o| USERS : "portal login (optional)"
+    TRAINERS ||--o| USERS : "portal login (optional)"
     MEMBERS ||--o{ MEMBERSHIPS : has
     MEMBERSHIP_PLANS ||--o{ MEMBERSHIPS : defines
     MEMBERS ||--o{ TRAINER_MEMBER_ASSIGNMENTS : has

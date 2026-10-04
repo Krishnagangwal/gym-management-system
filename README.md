@@ -17,6 +17,15 @@ See `docs/superpowers/specs/2026-08-19-gym-management-system-design.md` for the 
    psql -d gym_management -f database/schema.sql
    psql -d gym_management -f database/seed.sql
    ```
+   Apply migrations in order as they're added (currently just one):
+   ```bash
+   psql -d gym_management -f database/migrations/001_add_portal_roles.sql
+   ```
+   Optional: generate ~150 additional members with 12 months of realistic membership/attendance/payment
+   history for analytics/demo purposes (separate from `seed.sql`, safe to skip):
+   ```bash
+   node database/seed_demo.js
+   ```
 2. Install and configure the backend:
    ```bash
    cd server

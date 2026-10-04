@@ -1,10 +1,10 @@
 const pool = require('../config/db');
 
-async function create({ memberId, membershipId, amount, paymentDate, paymentMethod }) {
+async function create({ memberId, membershipId, amount, paymentDate, paymentMethod, invoiceId }) {
   const result = await pool.query(
-    `INSERT INTO payments (member_id, membership_id, amount, payment_date, payment_method)
-     VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-    [memberId, membershipId, amount, paymentDate, paymentMethod]
+    `INSERT INTO payments (member_id, membership_id, amount, payment_date, payment_method, invoice_id)
+     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+    [memberId, membershipId, amount, paymentDate, paymentMethod, invoiceId || null]
   );
   return result.rows[0];
 }
@@ -63,4 +63,22 @@ async function findRecent(limit) {
   return result.rows;
 }
 
-module.exports = { create, findAll, findById, sumForMonth, sumForCurrentMonth, findRecent };
+// Scoped by member_id at the query level (not just an app-level check) so a
+// member token can never fetch another member's payment/receipt by id.
+async function findByIdForMember(id, memberId) {
+  const result = await pool.query(
+    `SELECT p.*, m.first_name, m.last_name, m.email, ms.start_date, ms.end_date, mp.name AS plan_name
+     FROM payments p
+     JOIN members m ON m.id = p.member_id
+     JOIN memberships ms ON ms.id = p.membership_id
+     JOIN membership_plans mp ON mp.id = ms.plan_id
+     WHERE p.id = $1 AND p.member_id = $2`,
+    [id, memberId]
+  );
+  return result.rows[0];
+}
+
+module.exports = {
+  create, findAll, findById, sumForMonth, sumForCurrentMonth, findRecent,
+  findByIdForMember,
+};

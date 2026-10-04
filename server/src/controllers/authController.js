@@ -20,14 +20,17 @@ async function login(req, res, next) {
     }
 
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id, role: user.role, name: user.name, memberId: user.member_id, trainerId: user.trainer_id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
     res.json({
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id, name: user.name, email: user.email, role: user.role,
+        memberId: user.member_id, trainerId: user.trainer_id,
+      },
     });
   } catch (err) {
     next(err);

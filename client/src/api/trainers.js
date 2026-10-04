@@ -7,4 +7,6 @@ export const trainersApi = {
   setStatus: (token, id, isActive) => apiFetch(`/trainers/${id}/status`, { method: 'PATCH', body: { isActive }, token }),
   assign: (token, trainerId, memberId) => apiFetch(`/trainers/${trainerId}/assign/${memberId}`, { method: 'POST', token }),
   memberTrainer: (token, memberId) => apiFetch(`/members/${memberId}/trainer`, { token }).catch(() => null),
+  getLogin: (token, id) => apiFetch(`/trainers/${id}/login`, { token }).catch(() => null),
+  createLogin: (token, id, body) => apiFetch(`/trainers/${id}/login`, { method: 'POST', body, token }),
 };

@@ -1,5 +1,7 @@
 const paymentsDb = require('../db/paymentsDb');
 const membersDb = require('../db/membersDb');
+const invoicesDb = require('../db/invoicesDb');
+const auditDb = require('../db/auditDb');
 const pool = require('../config/db');
 
 const VALID_METHODS = ['cash', 'card', 'upi', 'bank_transfer'];
@@ -23,7 +25,15 @@ async function createPayment(req, res, next) {
       return res.status(404).json({ error: 'Membership not found for this member' });
     }
 
-    res.status(201).json(await paymentsDb.create(req.body));
+    // Memberships created before this module existed (or seeded directly)
+    // have no invoice — linking/marking paid is best-effort, not required.
+    const invoice = await invoicesDb.findByMembershipId(membershipId);
+    const payment = await paymentsDb.create({ ...req.body, invoiceId: invoice ? invoice.id : null });
+    if (invoice && invoice.status !== 'paid') {
+      await invoicesDb.markPaid(invoice.id);
+    }
+    await auditDb.logFromRequest(req, { action: 'create', entityType: 'payment', entityId: payment.id, newValues: payment });
+    res.status(201).json(payment);
   } catch (err) {
     next(err);
   }

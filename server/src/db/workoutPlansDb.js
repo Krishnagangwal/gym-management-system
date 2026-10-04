@@ -29,7 +29,7 @@ async function addExercise(planId, { exerciseId, dayOfWeek, sets, reps }) {
 
 async function findExercises(planId) {
   const result = await pool.query(
-    `SELECT wpe.id, wpe.day_of_week, wpe.sets, wpe.reps, e.name AS exercise_name, e.muscle_group
+    `SELECT wpe.id, wpe.exercise_id, wpe.day_of_week, wpe.sets, wpe.reps, e.name AS exercise_name, e.muscle_group
      FROM workout_plan_exercises wpe
      JOIN exercises e ON e.id = wpe.exercise_id
      WHERE wpe.workout_plan_id = $1

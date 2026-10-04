@@ -1,6 +1,9 @@
+const pool = require('../config/db');
 const membershipsDb = require('../db/membershipsDb');
 const membersDb = require('../db/membersDb');
 const plansDb = require('../db/membershipPlansDb');
+const invoicesDb = require('../db/invoicesDb');
+const auditDb = require('../db/auditDb');
 
 async function assignOrRenew(req, res, next) {
   try {
@@ -21,10 +24,29 @@ async function assignOrRenew(req, res, next) {
       return res.status(409).json({ error: 'Member already has an active membership. Wait for it to expire before assigning a new one.' });
     }
 
-    const membership = await membershipsDb.create({
-      memberId, planId, startDate, durationDays: plan.duration_days,
-    });
-    res.status(201).json(membership);
+    // Membership + its GST invoice are created atomically: an invoice
+    // without a membership (or vice versa) would leave the books wrong.
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const membership = await membershipsDb.create({
+        memberId, planId, startDate, durationDays: plan.duration_days,
+      }, client);
+      const invoice = await invoicesDb.generateForMembership({
+        memberId, membershipId: membership.id, subtotal: plan.price, issueDate: startDate,
+      }, client);
+      await client.query('COMMIT');
+
+      await auditDb.logFromRequest(req, { action: 'create', entityType: 'membership', entityId: membership.id, newValues: membership });
+      await auditDb.logFromRequest(req, { action: 'create', entityType: 'invoice', entityId: invoice.id, newValues: invoice });
+
+      res.status(201).json({ ...membership, invoice });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     next(err);
   }

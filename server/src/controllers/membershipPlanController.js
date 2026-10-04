@@ -1,4 +1,5 @@
 const plansDb = require('../db/membershipPlansDb');
+const auditDb = require('../db/auditDb');
 
 async function createPlan(req, res, next) {
   try {
@@ -10,6 +11,7 @@ async function createPlan(req, res, next) {
       return res.status(400).json({ error: 'durationDays must be positive and price cannot be negative' });
     }
     const plan = await plansDb.create(req.body);
+    await auditDb.logFromRequest(req, { action: 'create', entityType: 'plan', entityId: plan.id, newValues: plan });
     res.status(201).json(plan);
   } catch (err) {
     next(err);
@@ -33,7 +35,9 @@ async function updatePlan(req, res, next) {
     if (!name || !durationDays || price === undefined || typeof isActive !== 'boolean') {
       return res.status(400).json({ error: 'name, durationDays, price, and isActive are required' });
     }
-    res.json(await plansDb.update(req.params.id, req.body));
+    const plan = await plansDb.update(req.params.id, req.body);
+    await auditDb.logFromRequest(req, { action: 'update', entityType: 'plan', entityId: plan.id, oldValues: existing, newValues: plan });
+    res.json(plan);
   } catch (err) {
     next(err);
   }

@@ -11,6 +11,18 @@ const memberWorkoutRoutes = require('./routes/memberWorkoutRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const meRoutes = require('./routes/meRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const expenseCategoriesRoutes = require('./routes/expenseCategoriesRoutes');
+const expensesRoutes = require('./routes/expensesRoutes');
+const invoicesRoutes = require('./routes/invoicesRoutes');
+const auditRoutes = require('./routes/auditRoutes');
+const approvalsRoutes = require('./routes/approvalsRoutes');
+const employeesRoutes = require('./routes/employeesRoutes');
+const staffAttendanceRoutes = require('./routes/staffAttendanceRoutes');
+const leaveRequestsRoutes = require('./routes/leaveRequestsRoutes');
+const payrollRoutes = require('./routes/payrollRoutes');
+const trainerPortalRoutes = require('./routes/trainerPortalRoutes');
 
 const app = express();
 
@@ -32,6 +44,18 @@ app.use('/api', memberWorkoutRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/me', meRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/expense-categories', expenseCategoriesRoutes);
+app.use('/api/expenses', expensesRoutes);
+app.use('/api/invoices', invoicesRoutes);
+app.use('/api/audit-log', auditRoutes);
+app.use('/api/approvals', approvalsRoutes);
+app.use('/api/employees', employeesRoutes);
+app.use('/api/staff-attendance', staffAttendanceRoutes);
+app.use('/api/leave-requests', leaveRequestsRoutes);
+app.use('/api/payroll', payrollRoutes);
+app.use('/api/trainer', trainerPortalRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

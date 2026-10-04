@@ -22,8 +22,11 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const loggedInUser = await login(email, password);
+      const destination = loggedInUser.role === 'member' ? '/member/dashboard'
+        : loggedInUser.role === 'trainer' ? '/trainer/members'
+        : '/dashboard';
+      navigate(destination);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -34,12 +37,12 @@ export default function Login() {
   return (
     <div className="min-h-screen flex">
       {/* Branding panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white p-12 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-500/10 blur-3xl" />
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between bg-gradient-to-br from-slate-900 via-indigo-950 to-indigo-950 text-white p-12 overflow-hidden">
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-indigo-500/10 blur-3xl" />
         <div className="absolute -bottom-32 -left-16 w-96 h-96 rounded-full bg-indigo-500/10 blur-3xl" />
 
         <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
             <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white">
               <path d="M4 9v6M2 10v4M20 9v6M22 10v4M7 12h10M7 8a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V8ZM13 8a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V8Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -51,14 +54,14 @@ export default function Login() {
           <h1 className="text-4xl font-bold leading-tight mb-4">
             Run your gym<br />from one dashboard.
           </h1>
-          <p className="text-blue-200/80 text-base mb-8 max-w-sm">
+          <p className="text-indigo-200/80 text-base mb-8 max-w-sm">
             Members, trainers, workout plans, attendance, and payments — all in a single, simple system.
           </p>
           <ul className="space-y-3">
             {FEATURES.map((feature) => (
-              <li key={feature} className="flex items-center gap-3 text-sm text-blue-100/90">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
-                  <svg viewBox="0 0 20 20" fill="none" className="w-3 h-3 text-blue-300">
+              <li key={feature} className="flex items-center gap-3 text-sm text-indigo-100/90">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                  <svg viewBox="0 0 20 20" fill="none" className="w-3 h-3 text-indigo-300">
                     <path d="M4 10l4 4 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
@@ -68,14 +71,14 @@ export default function Login() {
           </ul>
         </div>
 
-        <p className="relative text-xs text-blue-300/50">Gym & Fitness Center Management System</p>
+        <p className="relative text-xs text-indigo-300/50">Gym & Fitness Center Management System</p>
       </div>
 
       {/* Form panel */}
       <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-12">
         <div className="w-full max-w-sm">
           <div className="mb-8 lg:hidden flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center">
               <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white">
                 <path d="M4 9v6M2 10v4M20 9v6M22 10v4M7 12h10M7 8a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V8ZM13 8a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V8Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -107,7 +110,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@gym.com"
-                  className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   required
                 />
               </div>
@@ -127,7 +130,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border border-gray-300 rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full border border-gray-300 rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   required
                 />
                 <button
@@ -153,7 +156,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 mt-2"
+              className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <>
@@ -169,9 +172,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-xs text-gray-400 text-center mt-8">
-            Demo — Admin: admin@gym.com / Admin@123 · Staff: staff@gym.com / Staff@123
-          </p>
+          
         </div>
       </div>
     </div>

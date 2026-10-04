@@ -1,6 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch(path, { method = 'GET', body, token } = {}) {
+  console.log(BASE_URL);
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 

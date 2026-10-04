@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { attendanceApi } from '../api/attendance';
 import { membersApi } from '../api/members';
 import DataTable from '../components/DataTable';
+import Badge from '../components/Badge';
+import { IconCalendarCheck } from '../components/icons.jsx';
 import { todayISO } from '../utils/formatDate';
 
 export default function Attendance() {
@@ -43,37 +45,47 @@ export default function Attendance() {
     load();
   }
 
+  const checkedIn = records.filter((r) => !r.check_out_time).length;
+
   const columns = [
-    { key: 'name', label: 'Member', render: (r) => `${r.first_name} ${r.last_name}` },
+    { key: 'name', label: 'Member', render: (r) => <span className="font-medium text-gray-800">{r.first_name} {r.last_name}</span> },
     { key: 'check_in_time', label: 'Check In', render: (r) => new Date(r.check_in_time).toLocaleTimeString() },
-    { key: 'check_out_time', label: 'Check Out', render: (r) => (r.check_out_time ? new Date(r.check_out_time).toLocaleTimeString() : '—') },
+    { key: 'check_out_time', label: 'Check Out', render: (r) => (r.check_out_time ? new Date(r.check_out_time).toLocaleTimeString() : <Badge tone="green" dot>In Gym</Badge>) },
   ];
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Attendance</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="page-header-icon">
+          <IconCalendarCheck style={{ width: 22, height: 22 }} />
+        </div>
+        <div>
+          <h1 className="page-title">Attendance</h1>
+          <p className="text-sm text-gray-400">{checkedIn} currently checked in</p>
+        </div>
+      </div>
 
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <h2 className="font-semibold mb-3">Check In a Member</h2>
-        {checkInError && <div className="bg-red-100 text-red-700 px-3 py-2 rounded mb-3 text-sm">{checkInError}</div>}
+      <div className="card p-5 mb-6">
+        <h2 className="font-semibold text-gray-900 mb-3">Check In a Member</h2>
+        {checkInError && <div className="alert-error mb-3">{checkInError}</div>}
         <form onSubmit={handleCheckIn} className="flex gap-2 items-end">
-          <select value={selectedMember} onChange={(e) => setSelectedMember(e.target.value)} className="border rounded px-3 py-2 text-sm" required>
+          <select value={selectedMember} onChange={(e) => setSelectedMember(e.target.value)} className="input-field max-w-xs" required>
             <option value="" disabled>Select a member</option>
             {members.map((m) => <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>)}
           </select>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Check In</button>
+          <button type="submit" className="btn-primary">Check In</button>
         </form>
       </div>
 
       <div className="mb-4 flex gap-2 items-center">
-        <label className="text-sm text-gray-600">Date:</label>
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="border rounded px-3 py-2 text-sm" />
+        <label className="text-sm text-gray-500 font-medium">Date:</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="input-field max-w-fit" />
       </div>
 
-      {error && <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+      {error && <div className="alert-error mb-4">{error}</div>}
       {loading ? <div className="text-gray-500">Loading...</div> : (
         <DataTable columns={columns} rows={records} renderActions={(r) => (
-          !r.check_out_time && <button onClick={() => handleCheckOut(r.id)} className="text-blue-600 text-sm hover:underline">Check Out</button>
+          !r.check_out_time && <button onClick={() => handleCheckOut(r.id)} className="btn-link">Check Out</button>
         )} />
       )}
     </div>

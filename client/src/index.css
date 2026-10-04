@@ -1,5 +1,68 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: light;
+}
+
 body {
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f3f4f8;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-sm shadow-indigo-600/30 hover:from-indigo-500 hover:to-indigo-600 active:from-indigo-700 active:to-indigo-800 transition disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-4 py-2.5 rounded-xl font-medium text-sm border border-gray-200 shadow-sm hover:bg-gray-50 hover:border-gray-300 transition;
+  }
+  .btn-link {
+    @apply text-indigo-600 text-sm font-medium hover:text-indigo-700 hover:underline underline-offset-2;
+  }
+  .btn-danger-link {
+    @apply text-rose-600 text-sm font-medium hover:text-rose-700 hover:underline underline-offset-2;
+  }
+  .input-field {
+    @apply w-full border border-gray-200 bg-white rounded-xl px-3.5 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition;
+  }
+  .field-label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm shadow-gray-200/70 border border-gray-100;
+  }
+  .page-title {
+    @apply text-2xl font-bold text-gray-900 tracking-tight;
+  }
+  .page-header-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-sm shadow-indigo-600/30 flex-shrink-0;
+  }
+  .tab-btn {
+    @apply px-3.5 py-2 rounded-xl text-sm font-medium border transition;
+  }
+  .tab-btn-active {
+    @apply bg-indigo-600 text-white border-indigo-600 shadow-sm shadow-indigo-600/25;
+  }
+  .tab-btn-inactive {
+    @apply bg-white text-gray-600 border-gray-200 hover:bg-gray-50;
+  }
+  .alert-error {
+    @apply bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm;
+  }
 }

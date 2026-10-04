@@ -9,7 +9,7 @@ function verifyToken(req, res, next) {
   const token = header.split(' ')[1];
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: payload.id, role: payload.role };
+    req.user = { id: payload.id, role: payload.role, name: payload.name, memberId: payload.memberId, trainerId: payload.trainerId };
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });

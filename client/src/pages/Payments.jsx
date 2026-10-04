@@ -5,9 +5,12 @@ import { membersApi } from '../api/members';
 import { membershipsApi } from '../api/memberships';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
+import Badge from '../components/Badge';
+import { IconCard, IconPlus, IconRupee } from '../components/icons.jsx';
 import { formatDate, todayISO } from '../utils/formatDate';
 
 const METHODS = ['cash', 'card', 'upi', 'bank_transfer'];
+const METHOD_TONE = { cash: 'gray', card: 'indigo', upi: 'sky', bank_transfer: 'amber' };
 
 export default function Payments() {
   const { token } = useAuth();
@@ -53,71 +56,86 @@ export default function Payments() {
     setReceipt(await paymentsApi.receipt(token, payment.id));
   }
 
+  const totalRevenue = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+
   const columns = [
-    { key: 'name', label: 'Member', render: (r) => `${r.first_name} ${r.last_name}` },
-    { key: 'amount', label: 'Amount', render: (r) => `₹${r.amount}` },
+    { key: 'name', label: 'Member', render: (r) => <span className="font-medium text-gray-800">{r.first_name} {r.last_name}</span> },
+    { key: 'amount', label: 'Amount', render: (r) => <span className="font-semibold text-gray-900">₹{r.amount}</span> },
     { key: 'payment_date', label: 'Date', render: (r) => formatDate(r.payment_date) },
-    { key: 'payment_method', label: 'Method' },
+    { key: 'payment_method', label: 'Method', render: (r) => <Badge tone={METHOD_TONE[r.payment_method] || 'gray'}>{r.payment_method.replace('_', ' ')}</Badge> },
   ];
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Payments</h1>
-        <button onClick={() => setFormOpen(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Record Payment</button>
+        <div className="flex items-center gap-3">
+          <div className="page-header-icon">
+            <IconCard style={{ width: 22, height: 22 }} />
+          </div>
+          <div>
+            <h1 className="page-title">Payments</h1>
+            <p className="text-sm text-gray-400">₹{totalRevenue.toFixed(2)} collected total</p>
+          </div>
+        </div>
+        <button onClick={() => setFormOpen(true)} className="btn-primary"><IconPlus style={{ width: 16, height: 16 }} /> Record Payment</button>
       </div>
 
-      {error && <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+      {error && <div className="alert-error mb-4">{error}</div>}
       {loading ? <div className="text-gray-500">Loading payments...</div> : (
         <DataTable columns={columns} rows={payments} renderActions={(r) => (
-          <button onClick={() => viewReceipt(r)} className="text-blue-600 text-sm hover:underline">View Receipt</button>
+          <button onClick={() => viewReceipt(r)} className="btn-link">View Receipt</button>
         )} />
       )}
 
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title="Record Payment">
         <form onSubmit={handleSubmit}>
-          {formError && <div className="bg-red-100 text-red-700 px-3 py-2 rounded mb-3 text-sm">{formError}</div>}
+          {formError && <div className="alert-error mb-3">{formError}</div>}
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Member</label>
-            <select value={memberId} onChange={(e) => setMemberId(e.target.value)} className="w-full border rounded px-3 py-2 text-sm" required>
+            <label className="field-label">Member</label>
+            <select value={memberId} onChange={(e) => setMemberId(e.target.value)} className="input-field" required>
               <option value="" disabled>Select a member</option>
               {members.map((m) => <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>)}
             </select>
           </div>
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Membership</label>
-            <select value={form.membershipId} onChange={(e) => setForm({ ...form, membershipId: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" required disabled={!memberId}>
+            <label className="field-label">Membership</label>
+            <select value={form.membershipId} onChange={(e) => setForm({ ...form, membershipId: e.target.value })} className="input-field" required disabled={!memberId}>
               <option value="" disabled>Select a membership</option>
               {memberships.map((m) => <option key={m.id} value={m.id}>{m.plan_name} ({formatDate(m.start_date)} - {formatDate(m.end_date)})</option>)}
             </select>
           </div>
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
-            <input type="number" min="0.01" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" required />
+            <label className="field-label">Amount (₹)</label>
+            <input type="number" min="0.01" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="input-field" required />
           </div>
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Date</label>
-            <input type="date" value={form.paymentDate} onChange={(e) => setForm({ ...form, paymentDate: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" required />
+            <label className="field-label">Payment Date</label>
+            <input type="date" value={form.paymentDate} onChange={(e) => setForm({ ...form, paymentDate: e.target.value })} className="input-field" required />
           </div>
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Method</label>
-            <select value={form.paymentMethod} onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })} className="w-full border rounded px-3 py-2 text-sm">
+            <label className="field-label">Method</label>
+            <select value={form.paymentMethod} onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })} className="input-field">
               {METHODS.map((m) => <option key={m} value={m}>{m.replace('_', ' ')}</option>)}
             </select>
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-2">Record Payment</button>
+          <button type="submit" className="btn-primary w-full mt-2">Record Payment</button>
         </form>
       </Modal>
 
       <Modal open={!!receipt} onClose={() => setReceipt(null)} title="Receipt">
         {receipt && (
-          <div className="text-sm space-y-2">
-            <div className="font-mono text-gray-500">{receipt.receiptNumber}</div>
-            <div><span className="text-gray-500">Member:</span> {receipt.memberName}</div>
-            <div><span className="text-gray-500">Plan:</span> {receipt.plan}</div>
-            <div><span className="text-gray-500">Period:</span> {formatDate(receipt.membershipPeriod.start)} to {formatDate(receipt.membershipPeriod.end)}</div>
-            <div><span className="text-gray-500">Amount:</span> ₹{receipt.amount}</div>
-            <div><span className="text-gray-500">Paid on:</span> {formatDate(receipt.paymentDate)} via {receipt.paymentMethod}</div>
+          <div className="text-sm">
+            <div className="flex items-center justify-center gap-2 py-4 mb-4 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
+              <IconRupee style={{ width: 20, height: 20 }} />
+              <span className="text-2xl font-bold">{receipt.amount}</span>
+            </div>
+            <div className="space-y-2.5">
+              <div className="font-mono text-gray-400 text-xs text-center mb-1">{receipt.receiptNumber}</div>
+              <div className="flex justify-between border-b border-gray-100 pb-2"><span className="text-gray-500">Member</span><span className="font-medium">{receipt.memberName}</span></div>
+              <div className="flex justify-between border-b border-gray-100 pb-2"><span className="text-gray-500">Plan</span><span className="font-medium">{receipt.plan}</span></div>
+              <div className="flex justify-between border-b border-gray-100 pb-2"><span className="text-gray-500">Period</span><span className="font-medium">{formatDate(receipt.membershipPeriod.start)} – {formatDate(receipt.membershipPeriod.end)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Paid on</span><span className="font-medium">{formatDate(receipt.paymentDate)} via {receipt.paymentMethod}</span></div>
+            </div>
           </div>
         )}
       </Modal>
